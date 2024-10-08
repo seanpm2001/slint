@@ -182,6 +182,25 @@ macro_rules! for_each_builtin_structs {
                 private {
                 }
             }
+
+            /// An item in the menu of a menu bar or context menu
+            struct MenuEntry {
+                @name = "slint::private_api::MenuEntry"
+                export {
+                    /// The text of the menu entry
+                    title: SharedString,
+                    /// the icon associated with the menu entry
+                    icons: Image,
+                    /// an opaque id that can be used to identify the menu entry
+                    id: SharedString,
+                    //keyboard_shortcut: KeySequence,
+                    /// whether the menu entry is enabled
+                    enabled: bool,
+                    /// Sub menu
+                    has_submenu: bool,
+                }
+                private {}
+            }
         ];
     };
 }

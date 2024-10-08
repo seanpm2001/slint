@@ -198,7 +198,19 @@ component WindowItem {
     in property <image> icon;
 }
 
-export component Window inherits WindowItem { }
+// Lowered to MenuBarImpl from the style
+component MenuBar {
+    //-is_non_item_type
+    //-disallow_global_types_as_child_elements
+    in property <[MenuEntry]> entries;
+
+    callback activated(MenuEntry);
+    callback sub-menu(MenuEntry) -> [MenuEntry];
+}
+
+export component Window inherits WindowItem {
+    MenuBar {}
+}
 
 export component BoxShadow inherits Empty {
     in property <length> border_radius;

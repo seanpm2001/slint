@@ -390,7 +390,7 @@ impl BuiltinPropertyInfo {
 }
 
 /// The base of an element
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, derive_more::From)]
 pub enum ElementType {
     /// The element is based of a component
     Component(Rc<Component>),

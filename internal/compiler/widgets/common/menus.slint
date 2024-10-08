@@ -1,0 +1,88 @@
+// Copyright © SixtyFPS GmbH <info@slint.dev>
+// SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-Royalty-free-2.0 OR LicenseRef-Slint-Software-3.0
+
+//! This file contains a generic implementation of the MenuBar and ContextMenu
+
+import { Palette } from "std-widgets-impl.slint";
+
+export component ContextMenuImpl {
+
+}
+
+export component MenuBarImpl {
+    callback activated(MenuEntry);
+    callback sub-menu(MenuEntry) -> [MenuEntry];
+
+    property <[MenuEntry]> entries;
+
+    property <length> px: 1rem / 14;
+
+    preferred-width: 100%;
+    HorizontalLayout {
+        padding: 5*px;
+        alignment: start;
+        spacing: 1*px;
+        for entry in entries: e := Rectangle {
+            background: ta.has-hover || ta.pressed ? Palette.alternate-background : transparent;
+            border-radius: 3*px;
+            HorizontalLayout {
+                padding: 11*px;
+                padding-top: 4*px;
+                padding-bottom: 6*px;
+                Text {
+                    text: entry.title;
+                }
+            }
+            ta := TouchArea {
+                clicked => {
+                    position-x = e.x;
+                    current-entries = sub-menu(entry);
+                    popup.show();
+                }
+            }
+        }
+
+        // For the default size when there is no entries
+        Rectangle {
+            HorizontalLayout {
+                padding-top: 0.4rem;
+                padding-bottom: 0.6rem;
+                Text { text: ""; }
+            }
+        }
+    }
+
+    property <length> position-x;
+    property <[MenuEntry]> current-entries;
+
+    popup := PopupWindow {
+        x: position-x;
+        y: root.height;
+        Rectangle {
+            border-radius: 7*px;
+            border-color: Palette.border;
+            background: Palette.background;
+            drop-shadow-blur: 2px;
+            drop-shadow-color: Palette.foreground.transparentize(0.5);
+            min-width: 10rem;
+            VerticalLayout {
+                padding: 5px;
+                for entry in current-entries: Rectangle {
+                    background: ita.has-hover || ita.pressed ? Palette.alternate-background : transparent;
+                    border-radius: 3*px;
+                    border-width: 1px;
+                    HorizontalLayout {
+                        padding: 11*px;
+                        padding-top: 4*px;
+                        padding-bottom: 6*px;
+                        Text {
+                            text: entry.title;
+                        }
+                    }
+                    ita := TouchArea { }
+                }
+            }
+        }
+    }
+}
+

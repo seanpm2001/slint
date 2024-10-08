@@ -185,7 +185,10 @@ This structure represents a point with x and y coordinate\n
             stringify!(string)
         };
         (Coord) => {
-            stringify!(length)
+            "length"
+        };
+        (Image) => {
+            "image"
         };
         ($pub_type:ident) => {
             stringify!($pub_type)
