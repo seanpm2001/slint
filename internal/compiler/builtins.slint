@@ -183,6 +183,25 @@ export component SwipeGestureHandler {
     //-default_size_binding:expands_to_parent_geometry
 }
 
+// Lowered to MenuBarImpl from the style
+component MenuBar {
+    //-is_non_item_type
+    //-disallow_global_types_as_child_elements
+    in property <[MenuEntry]> entries;
+
+    callback activated(MenuEntry);
+    callback sub-menu(MenuEntry) -> [MenuEntry];
+}
+
+// Lowered to a call that generate a ContextMenuImpl
+component ContextMenu {
+    function show() {}
+    in property <[MenuEntry]> entries;
+    callback activated(MenuEntry);
+    callback sub-menu(MenuEntry) -> [MenuEntry];
+
+}
+
 component WindowItem {
     in-out property <length> width;
     in-out property <length> height;
@@ -196,16 +215,6 @@ component WindowItem {
     in-out property <length> default-font-size; // <=> StyleMetrics.default-font-size  set in apply_default_properties_from_style
     in property <int> default-font-weight;
     in property <image> icon;
-}
-
-// Lowered to MenuBarImpl from the style
-component MenuBar {
-    //-is_non_item_type
-    //-disallow_global_types_as_child_elements
-    in property <[MenuEntry]> entries;
-
-    callback activated(MenuEntry);
-    callback sub-menu(MenuEntry) -> [MenuEntry];
 }
 
 export component Window inherits WindowItem {

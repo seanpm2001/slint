@@ -1040,6 +1040,10 @@ impl WindowInner {
         }));
     }
 
+    /// Show a PopupMeny with the given entries
+    pub fn show_popup_menu(&self, menu: ItemTreeRc, position: Point) {
+    }
+
     /// Removes any active popup.
     /// TODO: this function should take a component ref as parameter, to close a specific popup - i.e. when popup menus create a hierarchy of popups.
     pub fn close_popup(&self) {

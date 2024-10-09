@@ -57,6 +57,9 @@ pub struct Document {
 
     /// The list of used extra types used recursively.
     pub used_types: RefCell<UsedSubTypes>,
+
+    /// The popup_menu_impl
+    pub popup_menu_impl: Option<Rc<Component>>
 }
 
 impl Document {
@@ -236,11 +239,12 @@ impl Document {
             exports,
             embedded_file_resources: Default::default(),
             used_types: Default::default(),
+            popup_menu_impl: None,
         }
     }
 
     pub fn exported_roots(&self) -> impl DoubleEndedIterator<Item = Rc<Component>> + '_ {
-        self.exports.iter().filter_map(|e| e.1.as_ref().left()).filter(|c| !c.is_global()).cloned()
+        self.exports.iter().filter_map(|e| e.1.as_ref().left()).filter(|c| !c.is_global()).chain(self.popup_menu_impl.iter()).cloned()
     }
 
     /// This is the component that is going to be instantiated by the interpreter

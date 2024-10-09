@@ -18,18 +18,20 @@ struct UsefulMenuComponents {
 }
 
 pub async fn lower_menus(
-    doc: &Document,
+    doc: &mut Document,
     type_loader: &mut crate::typeloader::TypeLoader,
     diag: &mut BuildDiagnostics,
 ) {
     // Ignore import errors
     let mut build_diags_to_ignore = BuildDiagnostics::default();
+
+    let menubar_impl = type_loader
+        .import_component("std-widgets.slint", "MenuBarImpl", &mut build_diags_to_ignore)
+        .await
+        .expect("MenuBarImpl should be in std-widgets.slint")
+        .into();
     let useful_menu_component = UsefulMenuComponents {
-        menubar_impl: type_loader
-            .import_component("std-widgets.slint", "MenuBarImpl", &mut build_diags_to_ignore)
-            .await
-            .expect("MenuBarImpl should be in std-widgets.slint")
-            .into(),
+        menubar_impl: menubar_impl.clone().into(),
         vertical_layout: type_loader
             .global_type_registry
             .borrow()
@@ -38,16 +40,50 @@ pub async fn lower_menus(
         empty: type_loader.global_type_registry.borrow().empty_type(),
     };
 
+    let mut has_menu = false;
+
     doc.visit_all_used_components(|component| {
         recurse_elem_including_sub_components_no_borrow(component, &(), &mut |elem, _| {
             if matches!(&elem.borrow().builtin_type(), Some(b) if b.name == "Window") {
-                process_window(elem, &useful_menu_component, diag);
+                has_menu |= process_window(elem, &useful_menu_component, diag);
+            }
+            if matches!(&elem.borrow().builtin_type(), Some(b) if b.name == "ContextMenu") {
+                has_menu |= process_context_menu(elem, &useful_menu_component, diag);
             }
         })
     });
+
+    if has_menu {
+        let popup_menu_impl = type_loader
+            .import_component("std-widgets.slint", "PopupMenuImpl", &mut build_diags_to_ignore)
+            .await
+            .expect("PopupMenuImpl should be in std-widgets.slint");
+        recurse_elem_including_sub_components_no_borrow(&popup_menu_impl, &(), &mut |elem, _| {
+            if matches!(&elem.borrow().builtin_type(), Some(b) if b.name == "ContextMenu") {
+                process_context_menu(elem, &useful_menu_component, diag);
+            }
+        });
+        recurse_elem_including_sub_components_no_borrow(&menubar_impl, &(), &mut |elem, _| {
+            if matches!(&elem.borrow().builtin_type(), Some(b) if b.name == "ContextMenu") {
+                process_context_menu(elem, &useful_menu_component, diag);
+            }
+        });
+        doc.popup_menu_impl = popup_menu_impl.into();
+    }
 }
 
-fn process_window(win: &ElementRc, components: &UsefulMenuComponents, diag: &mut BuildDiagnostics) {
+fn process_context_menu(
+    context_menu_elem: &ElementRc,
+    useful_menu_component: &UsefulMenuComponents,
+    diag: &mut BuildDiagnostics,
+) -> bool {
+}
+
+fn process_window(
+    win: &ElementRc,
+    components: &UsefulMenuComponents,
+    diag: &mut BuildDiagnostics,
+) -> bool {
     /*  if matches!(&elem.borrow_mut().base_type, ElementType::Builtin(_)) {
         // That's the TabWidget re-exported from the style, it doesn't need to be processed
         return;
@@ -69,7 +105,7 @@ fn process_window(win: &ElementRc, components: &UsefulMenuComponents, diag: &mut
     });
 
     let Some(menu_bar) = menu_bar else {
-        return;
+        return false;
     };
     menu_bar.borrow_mut().base_type = components.menubar_impl.clone();
 
@@ -110,4 +146,5 @@ fn process_window(win: &ElementRc, components: &UsefulMenuComponents, diag: &mut
     });
     // except for the actual geometry
     win.borrow_mut().geometry_props.as_mut().unwrap().height = win_height;
+    true
 }
