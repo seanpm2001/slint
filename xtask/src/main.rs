@@ -11,6 +11,7 @@ mod license_headers_check;
 mod nodepackage;
 mod reuse_compliance_check;
 mod slintdocs;
+mod util;
 
 #[derive(Debug, clap::Parser)]
 #[command(author, version, about, long_about = None)]

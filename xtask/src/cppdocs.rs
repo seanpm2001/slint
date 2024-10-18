@@ -5,59 +5,12 @@
 
 use anyhow::{Context, Result};
 use std::ffi::OsString;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
+
+use crate::util::{symlink_file, symlink_files_in_dir};
 
 #[path = "../../api/cpp/cbindgen.rs"]
 mod cbindgen;
-
-fn symlink_file<P: AsRef<Path>, Q: AsRef<Path>>(src: P, dst: Q) -> Result<()> {
-    if dst.as_ref().exists() {
-        std::fs::remove_file(dst.as_ref()).context("Error removing old symlink")?;
-    }
-    #[cfg(target_os = "windows")]
-    return std::os::windows::fs::symlink_file(&src, &dst).context("Error creating symlink");
-    #[cfg(not(target_os = "windows"))]
-    return std::os::unix::fs::symlink(&src, &dst).context(format!(
-        "Error creating symlink from {} to {}",
-        src.as_ref().display(),
-        dst.as_ref().display()
-    ));
-}
-
-fn symlink_dir<P: AsRef<Path>, Q: AsRef<Path>>(src: P, dst: Q) -> Result<()> {
-    if dst.as_ref().exists() {
-        std::fs::remove_dir_all(dst.as_ref()).context("Error removing old symlink")?;
-    }
-    #[cfg(target_os = "windows")]
-    return std::os::windows::fs::symlink_dir(&src, &dst).context("Error creating symlink");
-    #[cfg(not(target_os = "windows"))]
-    return std::os::unix::fs::symlink(&src, &dst).context(format!(
-        "Error creating symlink from {} to {}",
-        src.as_ref().display(),
-        dst.as_ref().display()
-    ));
-}
-
-fn symlink_files_in_dir<S: AsRef<Path>, T: AsRef<Path>, TS: AsRef<Path>>(
-    src: S,
-    target: T,
-    target_to_source: TS,
-) -> Result<()> {
-    for entry in std::fs::read_dir(src.as_ref()).context("Error reading docs source directory")? {
-        let entry = entry.context("Error reading directory entry")?;
-        let path = entry.path();
-        let file_name = path.file_name().unwrap();
-        let symlink_source = target_to_source.as_ref().to_path_buf().join(&file_name);
-        let symlink_target = target.as_ref().to_path_buf().join(path.file_name().unwrap());
-        let filetype = entry.file_type().context("Cannot determine file type")?;
-        if filetype.is_file() {
-            symlink_file(symlink_source, symlink_target).context("Could not symlink file")?;
-        } else if filetype.is_dir() {
-            symlink_dir(symlink_source, symlink_target).context("Could not symlink directory")?;
-        }
-    }
-    Ok(())
-}
 
 pub fn generate(show_warnings: bool, experimental: bool) -> Result<(), Box<dyn std::error::Error>> {
     let root = super::root_dir();
@@ -74,6 +27,7 @@ pub fn generate(show_warnings: bool, experimental: bool) -> Result<(), Box<dyn s
         docs_source_dir.join("docs"),
         &docs_build_dir,
         ["..", "..", "api", "cpp", "docs"].iter().collect::<PathBuf>(),
+        &[],
     )
     .context("Error creating symlinks from docs source to docs build dir")?;
 
