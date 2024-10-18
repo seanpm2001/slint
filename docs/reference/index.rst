@@ -63,6 +63,16 @@
 
 .. toctree::
    :hidden:
+   :maxdepth: 3
+   :caption: C++
+
+   src/cpp/intro.md
+   src/cpp/mcu.md
+   src/cpp/integration.md
+   src/cpp/cmake_reference.md
+
+.. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: Introduction (old)
 
