@@ -97,8 +97,8 @@
    src/js/instanciating_a_component.md
    src/js/properties.md
    src/js/callbacks.md
-   src/js/type-mapping.md
    src/js/globals.md
+   src/js/type-mapping.md
    
 
 .. toctree::
@@ -107,6 +107,11 @@
    :caption: python
 
    src/python/intro.md
+   src/python/installation.nd
+   src/python/properties.md
+   src/python/callbacks.md
+   src/python/globals.md
+   src/python/type-mapping.md
 
 .. toctree::
    :hidden:
