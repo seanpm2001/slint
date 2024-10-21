@@ -64,12 +64,49 @@
 .. toctree::
    :hidden:
    :maxdepth: 3
+   :caption: Rust
+
+   src/rust/intro.md
+   src/rust/embedding_slint_ui.md
+   src/rust/generated_components.md
+   src/rust/event_loop.md
+   src/rust/globals.md
+   src/rust/type-mapping.md
+   src/rust/mcu.md
+   
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
    :caption: C++
 
    src/cpp/intro.md
    src/cpp/mcu.md
    src/cpp/integration.md
    src/cpp/cmake_reference.md
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
+   :caption: Javascript & Typescript
+
+   src/js/intro.md
+   src/js/node.md
+   src/js/deno.md
+   src/js/bun.md
+   src/js/instanciating_a_component.md
+   src/js/properties.md
+   src/js/callbacks.md
+   src/js/type-mapping.md
+   src/js/globals.md
+   
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
+   :caption: python
+
+   src/python/intro.md
 
 .. toctree::
    :hidden:
