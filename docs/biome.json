@@ -4,6 +4,6 @@
         "ignore": ["**/.astro/**", "archive/**"]
     },
     "linter": {
-        "ignore": ["**/.astro/**"]
+        "ignore": ["**/.astro/**", "archive/**"]
     }
 }
