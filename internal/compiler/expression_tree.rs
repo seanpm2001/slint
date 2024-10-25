@@ -60,6 +60,7 @@ pub enum BuiltinFunction {
     ColorWithAlpha,
     ImageSize,
     ArrayLength,
+    ArrayIndexOf,
     Rgb,
     Hsv,
     ColorScheme,
@@ -249,6 +250,9 @@ impl BuiltinFunction {
             BuiltinFunction::ArrayLength => {
                 Type::Function { return_type: Box::new(Type::Int32), args: vec![Type::Model] }
             }
+            BuiltinFunction::ArrayIndexOf => {
+                Type::Function { return_type: Box::new(Type::Int32), args: vec![Type::Model, Type::ElementReference] }
+            },
             BuiltinFunction::Rgb => Type::Function {
                 return_type: Box::new(Type::Color),
                 args: vec![Type::Int32, Type::Int32, Type::Int32, Type::Float32],
@@ -322,6 +326,7 @@ impl BuiltinFunction {
             BuiltinFunction::UpdateTimers => {
                 Type::Function { return_type: Box::new(Type::Void), args: vec![] }
             }
+            
         }
     }
 
@@ -377,6 +382,7 @@ impl BuiltinFunction {
             #[cfg(target_arch = "wasm32")]
             BuiltinFunction::ImageSize => false,
             BuiltinFunction::ArrayLength => true,
+            BuiltinFunction::ArrayIndexOf => true,
             BuiltinFunction::Rgb => true,
             BuiltinFunction::Hsv => true,
             BuiltinFunction::SetTextInputFocused => false,
@@ -437,6 +443,7 @@ impl BuiltinFunction {
             | BuiltinFunction::ColorWithAlpha => true,
             BuiltinFunction::ImageSize => true,
             BuiltinFunction::ArrayLength => true,
+            BuiltinFunction::ArrayIndexOf => true,
             BuiltinFunction::Rgb => true,
             BuiltinFunction::Hsv => true,
             BuiltinFunction::ImplicitLayoutInfo(_) => true,
